@@ -302,21 +302,91 @@ using mint = modint<mod>;
 const int N = 400;
 const int M = 1995;
 
+/**
+ * @brief UnionFind
+ * @docs docs/UnionFind.md
+ */
+struct UnionFind {
+    vector<int> data; // sizes of sets
+
+    UnionFind(int sz) : data(sz, -1) {
+    }
+
+    bool unite(int x, int y) {
+        x = find(x), y = find(y);
+        if (x == y)
+            return false;
+        if (data[x] > data[y])
+            swap(x, y);
+        data[x] += data[y];
+        data[y] = x;
+        return true;
+    }
+
+    int find(int k) {
+        if (data[k] < 0)
+            return k;
+        return data[k] = find(data[k]);
+    }
+
+    int size(int k) {
+        return (-data[find(k)]);
+    }
+
+    bool same(int x, int y) {
+        return find(x) == find(y);
+    }
+};
+
+vl u(M), v(M), d(M);
+
+template <typename T> ll cost(int q, UnionFind &uf) {
+
+    vector<Edge<T>> edges;
+    rep(i, q + 1, M) {
+        edges.emplace_back(u[i], v[i], d[i]);
+    }
+    sort(all(edges), [&](Edge<T> x, Edge<T> &y) { return x.cost < y.cost; });
+    T res = 0;
+    for (auto &e : edges) {
+        if (uf.unite(e.to, e.from)) {
+            res += e.cost;
+        }
+    }
+    if (uf.size(0) != N)
+        return inf;
+    return res;
+}
 int main() {
     vl x(N), y(N);
     rep(i, N) {
         cin >> x[i] >> y[i];
     }
     Graph<ll> g(N);
-    vl u(M), v(M);
     rep(i, M) {
         cin >> u[i] >> v[i];
-        g.add_edge(u[i], v[i], round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]])));
+        d[i] = round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]])) * 2;
+        g.add_edge(u[i], v[i], d[i]);
     }
+
+    vi hist;
     rep(q, M) {
         int t;
         cin >> t;
-        cout << 1 << endl;
+        UnionFind uf0(N), uf1(N);
+        for (int h : hist) {
+            uf0.unite(u[h], v[h]);
+            uf1.unite(u[h], v[h]);
+        }
+        ll cost0 = cost<ll>(q, uf0);
+        uf1.unite(u[q], v[q]);
+        ll cost1 = t + cost<ll>(q, uf1);
+        if (cost0 < cost1) {
+            cout << 0 << endl;
+        } else {
+            cout << 1 << endl;
+            hist.pb(q);
+        }
     }
     return 0;
 }
