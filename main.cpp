@@ -338,7 +338,8 @@ struct UnionFind {
     }
 };
 
-vl u(M), v(M), d(M);
+vl u(M), v(M);
+vector<double> d(M);
 
 template <typename T> ll cost(int q, UnionFind &uf) {
 
@@ -365,7 +366,7 @@ int main() {
     Graph<ll> g(N);
     rep(i, M) {
         cin >> u[i] >> v[i];
-        d[i] = round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]])) * 2;
+        d[i] = 1.8 * round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]]));
         g.add_edge(u[i], v[i], d[i]);
     }
 
@@ -378,9 +379,9 @@ int main() {
             uf0.unite(u[h], v[h]);
             uf1.unite(u[h], v[h]);
         }
-        ll cost0 = cost<ll>(q, uf0);
+        double cost0 = cost<double>(q, uf0);
         uf1.unite(u[q], v[q]);
-        ll cost1 = t + cost<ll>(q, uf1);
+        double cost1 = t + cost<double>(q, uf1);
         if (cost0 < cost1) {
             cout << 0 << endl;
         } else {
