@@ -290,7 +290,6 @@ template <int Mod> struct modint {
 };
 
 /* #endregion*/
-#include <atcoder/all>
 #define inf 1000000000ll
 #define INF 4000000004000000000LL
 #define mod 998244353ll
@@ -300,6 +299,24 @@ const long double PI = 3.141592653589793;
 vl dx = {1, 0, -1, 0};
 vl dy = {0, 1, 0, -1};
 using mint = modint<mod>;
+const int N = 400;
+const int M = 1995;
 
 int main() {
+    vl x(N), y(N);
+    rep(i, N) {
+        cin >> x[i] >> y[i];
+    }
+    Graph<ll> g(N);
+    vl u(M), v(M);
+    rep(i, M) {
+        cin >> u[i] >> v[i];
+        g.add_edge(u[i], v[i], round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]])));
+    }
+    rep(q, M) {
+        int t;
+        cin >> t;
+        cout << 1 << endl;
+    }
+    return 0;
 }
