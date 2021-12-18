@@ -341,11 +341,10 @@ struct UnionFind {
 vl u(M), v(M);
 vector<double> d(M);
 
-template <typename T> ll cost(int q, UnionFind &uf) {
-
+template <typename T> ll cost(int q, UnionFind &uf, double coef) {
     vector<Edge<T>> edges;
     rep(i, q + 1, M) {
-        edges.emplace_back(u[i], v[i], d[i]);
+        edges.emplace_back(u[i], v[i], coef * d[i]);
     }
     sort(all(edges), [&](Edge<T> x, Edge<T> &y) { return x.cost < y.cost; });
     T res = 0;
@@ -358,7 +357,12 @@ template <typename T> ll cost(int q, UnionFind &uf) {
         return inf;
     return res;
 }
-int main() {
+int main(int argc, char *argv[]) {
+    double coef = 1.7749173347853633;
+    if (argc == 2) {
+        coef = stod(argv[1]);
+    }
+
     vl x(N), y(N);
     rep(i, N) {
         cin >> x[i] >> y[i];
@@ -366,11 +370,12 @@ int main() {
     Graph<ll> g(N);
     rep(i, M) {
         cin >> u[i] >> v[i];
-        d[i] = 1.8 * round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]]));
+        d[i] = round(hypot(x[u[i]] - x[v[i]], y[u[i]] - y[v[i]]));
         g.add_edge(u[i], v[i], d[i]);
     }
 
     vi hist;
+    ll final_cost = 0;
     rep(q, M) {
         int t;
         cin >> t;
@@ -379,15 +384,17 @@ int main() {
             uf0.unite(u[h], v[h]);
             uf1.unite(u[h], v[h]);
         }
-        double cost0 = cost<double>(q, uf0);
+        double cost0 = cost<double>(q, uf0, coef);
         uf1.unite(u[q], v[q]);
-        double cost1 = t + cost<double>(q, uf1);
+        double cost1 = t + cost<double>(q, uf1, coef);
         if (cost0 < cost1) {
             cout << 0 << endl;
         } else {
             cout << 1 << endl;
             hist.pb(q);
+            final_cost += t;
         }
     }
+    cerr << final_cost << endl;
     return 0;
 }
